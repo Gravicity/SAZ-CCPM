@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPO_URL="https://github.com/VeriVoxAI/saz-ccpm.git"
+REPO_URL="https://github.com/Gravicity/SAZ-CCPM.git"
 TARGET_DIR="."
 
 echo "Cloning repository from $REPO_URL..."

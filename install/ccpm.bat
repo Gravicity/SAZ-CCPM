@@ -1,6 +1,6 @@
 @echo off
 
-set REPO_URL=https://github.com/VeriVoxAI/saz-ccpm.git
+set REPO_URL=https://github.com/Gravicity/SAZ-CCPM.git
 set TARGET_DIR=.
 
 echo Cloning repository from %REPO_URL%...

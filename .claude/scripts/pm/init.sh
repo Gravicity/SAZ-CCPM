@@ -15,7 +15,7 @@ echo "┌───────────────────────�
 echo "│ SAZ-Enhanced Claude Code PM              │"
 echo "│ Natural Intelligence for Production Work │"
 echo "└──────────────────────────────────────────┘"
-echo "https://github.com/VeriVoxAI/saz-ccpm"
+echo "https://github.com/Gravicity/SAZ-CCPM"
 echo ""
 echo ""
 
@@ -95,7 +95,7 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
     echo "  ✅ Remote configured: $remote_url"
     
     # Check if remote is the CCPM/SAZ-CCPM template repository
-    if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazeio/ccpm.git"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm.git"* ]]; then
+    if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazeio/ccpm.git"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm.git"* ]] || [[ "$remote_url" == *"Gravicity/SAZ-CCPM"* ]] || [[ "$remote_url" == *"Gravicity/SAZ-CCPM.git"* ]]; then
       echo ""
       echo "  ⚠️ WARNING: Your remote origin points to the SAZ-CCPM template repository!"
       echo "  This means any issues you create will go to the template repo, not your project."

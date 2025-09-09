@@ -1,9 +1,9 @@
 # SAZ-CCPM: Natural Intelligence for Production Workflows
 
-[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.0-4b3baf)](https://github.com/VeriVoxAI/saz-ccpm)
+[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.0-4b3baf)](https://github.com/Gravicity/SAZ-CCPM)
 [![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-d97757)](https://claude.ai/code)
 [![GitHub Issues](https://img.shields.io/badge/Powered%20by-GitHub%20Issues-1f2328)](https://docs.github.com/en/issues)
-[![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/VeriVoxAI/saz-ccpm/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/Gravicity/SAZ-CCPM/blob/main/LICENSE)
 
 > **Natural conversation, professional execution.** From "I want to build something" to deployed code in production.
 
@@ -18,10 +18,10 @@ SAZ-CCPM combines conversational AI intelligence with battle-tested project mana
 cd /path/to/your/project
 
 # Install (Unix/Linux/macOS)
-curl -sSL https://raw.githubusercontent.com/VeriVoxAI/saz-ccpm/main/install/ccpm.sh | bash
+curl -sSL https://raw.githubusercontent.com/Gravicity/SAZ-CCPM/main/install/ccpm.sh | bash
 
 # Or Windows (PowerShell)
-iwr -useb https://raw.githubusercontent.com/VeriVoxAI/saz-ccpm/main/install/ccpm.bat | iex
+iwr -useb https://raw.githubusercontent.com/Gravicity/SAZ-CCPM/main/install/ccpm.bat | iex
 ```
 
 ### 2. Start Building
@@ -558,4 +558,4 @@ SAZ-CCPM builds on:
 
 **Ready to ship faster?** [Get started now](#-quick-start--2-minutes) or [explore examples](#-real-world-examples)
 
-*Maintained by [VeriVox AI](https://github.com/VeriVoxAI) | [Report issues](https://github.com/VeriVoxAI/saz-ccpm/issues) | [Star on GitHub](https://github.com/VeriVoxAI/saz-ccpm)*
+*Maintained by [Gravicity](https://github.com/Gravicity) | [Report issues](https://github.com/Gravicity/SAZ-CCPM/issues) | [Star on GitHub](https://github.com/Gravicity/SAZ-CCPM)*
