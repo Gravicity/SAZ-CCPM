@@ -104,17 +104,6 @@ SAZ-CCPM automatically detects your intent and switches modes:
 | 🔌 **Pure Services** | "Firebase setup", "screenshot [URL]", "YouTube transcript" | → mcp-handler |
 | 🔍 **Analysis** | "bug", "error", "trace logic", "code review" | → code-analyzer OR file-analyzer OR test-runner |
 
-### Adaptive Complexity Scaling
-
-SAZ-CCPM automatically adjusts process overhead based on project size:
-
-| Project Size | Detection | Workflow | GitHub | Example |
-|--------------|-----------|----------|---------|---------|
-| **Simple** | < 5 files OR 1-3 features | `/pm:epic-oneshot` | Optional | "Fix typo" or "MVP" → Direct fix |
-| **Medium** | 5-20 files OR 4-8 features | Standard PRD flow | Recommended | "Add payment" or "Full app" → Full workflow |
-| **Complex** | 20+ files OR 9+ features | Enhanced + parallel | Required | "Rebuild system" or "Marketplace" → Worktrees |
-
-The system scales process to match needs - no unnecessary ceremony for simple tasks.
 
 ## 🎯 When to Brainstorm vs. Skip to Implementation
 
@@ -418,16 +407,6 @@ Context optimization through specialized agents:
 - `parallel-worker` for concurrent task execution
 - Smart MCP gateway loads only required services (context-efficient)
 
-### Progressive Complexity
-- **Simple tasks** (< 5 files OR 1-3 features): Direct execution, no ceremony
-- **Medium projects** (5-20 files OR 4-8 features): Standard workflow with PRDs
-- **Complex systems** (20+ files OR 9+ features): Full architecture with parallel streams
-- **Enterprise** (multi-system OR 15+ features): Coordinated agent ecosystems
-
-Commands automatically scale:
-- Simple: `/pm:epic-oneshot` (skip PRDs)
-- Medium: `/pm:prd-new` → `/pm:epic-decompose`
-- Complex: `/pm:prd-new-enhanced` → `/pm:epic-start-worktree`
 
 ### Context Persistence
 The system maintains project context across sessions:
@@ -441,7 +420,6 @@ The system maintains project context across sessions:
 ### Customize Workflows
 Edit `.claude/rules/workflow-modes.md` to adjust:
 - Mode detection keywords
-- Complexity thresholds
 - Agent selection logic
 - Parallel execution limits
 
