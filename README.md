@@ -1,6 +1,6 @@
 # SAZ-CCPM: Natural Intelligence for Production Workflows
 
-[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.1-4b3baf)](https://github.com/Gravicity/SAZ-CCPM)
+[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.2-4b3baf)](https://github.com/Gravicity/SAZ-CCPM)
 [![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-d97757)](https://claude.ai/code)
 [![GitHub Issues](https://img.shields.io/badge/Powered%20by-GitHub%20Issues-1f2328)](https://docs.github.com/en/issues)
 [![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/Gravicity/SAZ-CCPM/blob/main/LICENSE)
@@ -166,14 +166,16 @@ Example output:
 
 ### Project Management Evolution
 
-| Traditional Dev | Basic AI Coding | SAZ-CCPM |
+| Traditional Dev | Basic AI Coding | SAZ-CCPM v2.2+ |
 |-----------------|-----------------|-----------|
-| Lost context between sessions | Some memory | **Persistent project state** |
+| Lost context between sessions | Some memory | **Persistent project state + context caching** |
 | Serial task execution | Single thread | **10+ parallel agents** |
 | Vibe coding from memory | Basic specs | **Brainstorm → Spec → Build** |
 | Hidden progress | Chat logs | **GitHub audit trail** |
 | Complex commands | Some automation | **90% natural language** |
 | Manual service setup | Basic integrations | **Smart MCP gateway** |
+| Outdated packages | Training cutoff | **Real-time version checking** |
+| Generic outputs | Fixed templates | **Adaptive to input specificity** |
 
 ## 🔌 MCP Ecosystem Integration
 
@@ -298,8 +300,7 @@ While SAZ-CCPM works primarily through natural language, these commands give you
 # - Then: /pm:prd-parse to create technical plan
 
 # Or explicit commands:
-/pm:prd-new feature           # Create PRD (clear requirements)
-/pm:prd-new feature --from-concept path  # Create PRD from brainstormed concept
+/pm:prd-new feature           # Create PRD (auto-detects recent concepts)
 /pm:prd-new-enhanced feature  # Force comprehensive planning (complex projects)
 /pm:prd-parse feature         # Convert PRD to technical plan
 /pm:epic-oneshot feature      # Skip PRD for simple tasks
@@ -602,7 +603,7 @@ MIT License - see [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 SAZ-CCPM builds on:
-- [CCPM](https://github.com/automazeio/ccpm) - Original project management system
+- CCPM - Original project management concepts
 - [SuperAgent Zero](https://github.com/VeriVoxAI/SuperAgent-Zero) - Conversational AI concepts
 - [Claude Code](https://claude.ai/code) - The AI development platform
 - GitHub Issues API - Our persistent backend

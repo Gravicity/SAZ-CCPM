@@ -1,11 +1,81 @@
 # Changelog
 
+## [2.2.1] - 2025-09-10
+
+### Repository Cleanup & Documentation Update
+
+- Removed all legacy "automazeio/ccpm" repository references
+- Simplified repository checks to only reference current Gravicity/SAZ-CCPM
+- Archived deprecated framework-architect agent (replaced by /saz:evolve command)
+- Updated README to v2.2 with current capabilities
+- Created private /saz:evolve command for framework evolution workflow
+
+### Files Modified
+
+- `.claude/scripts/pm/init.sh` - Simplified remote check to only Gravicity/SAZ-CCPM
+- `.claude/rules/github-operations.md` - Updated template repo reference  
+- `.claude/commands/pm/issue-sync.md` - Updated template repo error message
+- `.claude/commands/pm/epic-sync.md` - Updated repository protection check
+- `.claude/commands/saz/evolve.md` - Created new framework evolution command
+- `README.md` - Updated to v2.2, removed obsolete flags, added new capabilities
+- `.gitignore` - Added znotes/ and .claude/commands/saz/ to private files
+
 ## [Unreleased]
+
+### Phase 2: Temporal Awareness ✅
+- Updated brainstorming-specialist to search GitHub with current year
+- Added package version research to prd-new command 
+- Enhanced epic-decompose with latest version checking
+- Framework now uses `$(date +%Y)` for current year awareness
+- Prevents outdated package recommendations from AI training cutoffs
+
+### Phase 3: Workflow Return Paths ✅
+- Added workflow milestones section to CLAUDE.md
+- Updated brainstorming-specialist to instruct SAZ (not user) on next commands
+- Enhanced code-analyzer with PM return after emergency resolution
+- Established clear handoff points for issue management and context updates
+- PM now handles edits dynamically (prd/epic/issue) based on user changes
+
+### Phase 4: Adaptive Brainstorming Output ✅
+- Brainstorming now scales concept count based on input specificity (1-10 concepts)
+- Added format flexibility - template is reference, not requirement
+- Output adapts to idea type (technical tool vs consumer app vs API)
+- Quality standards updated to reflect adaptive approach
+- Removed rigid "minimum 3 concepts" rule
+
+### Phase 5: Research-First Planning with Compatibility Checks ✅
+- Added compatibility verification to PRD creation using npm-check-updates
+- PRD now requires checking peer dependencies before committing to tech stack
+- Added npmpeer.dev as resource for version compatibility checking
+- Brainstorming stays focused on ideation (not overburdened with checks)
+- WebSearch integration for finding compatibility issues between packages
+
+### Phase 6: File Path Reinforcement ✅
+- Emphasized relative paths (./{project-name}/) in epic-decompose
+- Added explicit warning against using home directory paths (~/)
+- Clarified projects should be created in current workspace
+- Updated task template to show proper relative path usage
+
+### Bonus: Simplified Brainstorming → PRD Flow ✅
+- Removed complex --from-concept flag requirement
+- PRD-new now auto-detects recent concepts by name
+- Simplified brainstorming output with clear command examples
+- Users can customize during PRD creation (templates, tech stack)
+
+## [v2.2] - In Progress
 
 ### Added
 - CHANGELOG.md for tracking improvements
 - TodoWrite tool to project-manager for workflow setup
 - Project assessment logic using `ls` command
+
+### Phase 1: Context Persistence System ✅
+- Added persistent state tracking in `.claude/context/project-state.md`
+- Enhanced project-manager to check cached state before expensive operations
+- Updated init.sh to create and maintain project state file
+- Prevents redundant initialization checks across sessions
+- Added STATE_CACHED flag to project-manager response pattern
+- Session tracking with unique IDs and timestamps
 
 ### Feature Improvements
 - project-manager now checks PM initialization status:

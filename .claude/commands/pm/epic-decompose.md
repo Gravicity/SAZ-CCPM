@@ -101,15 +101,18 @@ Clear, concise description of what needs to be done
 
 ## Project Structure Guidelines
 For tasks involving new project setup or package installation:
-- Create project in subfolder `{epic-name}/`
-- All project files go in the subfolder
+- Check latest versions: `npm view [package] version`
+- Use current versions in tasks: "Install React 19.x" not "Install React"
+- **IMPORTANT**: Create project in RELATIVE path `./{epic-name}/` NOT `~/{epic-name}/`
+- All project files go in the subfolder within current workspace
 - Root directory stays clean with only .claude/ and project folders
 
 ## Implementation Steps
 1. **Project Structure** (if creating new project):
    ```bash
-   mkdir -p {epic-name}
-   cd {epic-name}
+   # Use relative path in current workspace
+   mkdir -p ./{epic-name}
+   cd ./{epic-name}
    # All project files go here
    ```
 2. [Other implementation steps...]

@@ -72,7 +72,70 @@ mkdir -p .claude/epics
 mkdir -p .claude/rules
 mkdir -p .claude/agents
 mkdir -p .claude/scripts/pm
+mkdir -p .claude/context
 echo "  ✅ Directories created"
+
+# Create or update project state file
+echo ""
+echo "📄 Initializing project state..."
+state_file=".claude/context/project-state.md"
+current_time=$(date '+%Y-%m-%d %H:%M:%S')
+session_id="init_$(date '+%Y%m%d_%H%M%S')"
+
+# Check current state
+gh_auth_status="false"
+if gh auth status &> /dev/null; then
+  gh_auth_status="true"
+fi
+
+# Update state file
+cat > "$state_file" << EOF
+# Project State Persistence
+
+This file tracks the persistent state of the SAZ-CCPM project to prevent redundant initialization checks.
+
+## Initialization Status
+
+- **PM_SYSTEM_INITIALIZED**: true
+- **LAST_INIT_CHECK**: $current_time
+- **GH_CLI_AUTHENTICATED**: $gh_auth_status
+- **DIRECTORIES_CREATED**: true
+- **PROJECT_TYPE**: unknown
+- **LAST_ASSESSMENT**: never
+
+## Project Analysis Cache
+
+- **CODEBASE_TYPE**: unknown
+- **HAS_PACKAGE_JSON**: false
+- **HAS_SRC_DIR**: false
+- **HAS_CLAUDE_EPICS**: true
+- **HAS_CLAUDE_PRDS**: true
+- **ACTIVE_EPICS**: []
+- **LAST_FILE_SCAN**: never
+
+## Session Tracking
+
+- **CURRENT_SESSION_ID**: $session_id
+- **LAST_SESSION_DATE**: $current_time
+- **INITIALIZATION_COMPLETED_SESSIONS**: [$session_id]
+
+---
+
+## State Update Instructions
+
+This file should be updated by:
+1. \`project-manager.md\` during assessment phases
+2. \`.claude/scripts/pm/init.sh\` during initialization
+3. Other agents when making structural changes
+
+Format for updates:
+- Use key-value pairs with consistent naming
+- Include timestamps for time-sensitive data
+- Keep boolean values as true/false
+- Use "unknown"/"never" for uninitialized values
+EOF
+
+echo "  ✅ Project state initialized"
 
 # Copy scripts if in main repo
 if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
@@ -95,7 +158,7 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
     echo "  ✅ Remote configured: $remote_url"
     
     # Check if remote is the CCPM/SAZ-CCPM template repository
-    if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazeio/ccpm.git"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm"* ]] || [[ "$remote_url" == *"VeriVoxAI/saz-ccpm.git"* ]] || [[ "$remote_url" == *"Gravicity/SAZ-CCPM"* ]] || [[ "$remote_url" == *"Gravicity/SAZ-CCPM.git"* ]]; then
+    if [[ "$remote_url" == *"Gravicity/SAZ-CCPM"* ]] || [[ "$remote_url" == *"Gravicity/SAZ-CCPM.git"* ]]; then
       echo ""
       echo "  ⚠️ WARNING: Your remote origin points to the SAZ-CCPM template repository!"
       echo "  This means any issues you create will go to the template repo, not your project."
@@ -142,6 +205,17 @@ fi
 
 # Summary
 echo ""
+# Final state update
+echo ""
+echo "🔄 Finalizing project state..."
+if [ -f "$state_file" ]; then
+  # Update PM_SYSTEM_INITIALIZED to true since init completed successfully
+  sed -i'' -e "s/PM_SYSTEM_INITIALIZED.*/PM_SYSTEM_INITIALIZED**: true/g" "$state_file"
+  sed -i'' -e "s/GH_CLI_AUTHENTICATED.*/GH_CLI_AUTHENTICATED**: $gh_auth_status/g" "$state_file"
+  echo "  ✅ State file updated with initialization results"
+fi
+
+echo ""
 echo "✅ Initialization Complete!"
 echo "=========================="
 echo ""
@@ -149,6 +223,7 @@ echo "📊 System Status:"
 gh --version | head -1
 echo "  Extensions: $(gh extension list | wc -l) installed"
 echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
+echo "  State: Persistent context enabled"
 echo ""
 echo "🎯 Next Steps:"
 echo "  1. Create your first PRD: /pm:prd-new <feature-name>"
@@ -157,4 +232,6 @@ echo "  3. Check status: /pm:status"
 echo ""
 echo "📚 Documentation: .claude/saz-docs/README.md"
 
+echo ""
+echo "🧠 Context Persistence Active: Future project-manager calls will be faster!"
 exit 0

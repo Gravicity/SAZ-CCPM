@@ -47,13 +47,12 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 You are a product manager creating a comprehensive Product Requirements Document (PRD) for: **$ARGUMENTS**
 
 ### Check for Concept Input
-If `--from-concept` flag is provided:
-1. Read the concept file from the specified path
-2. Extract key details: features, technical approach, target users
-3. Skip discovery phase - use concept as foundation
-4. Jump directly to PRD creation with concept details
+If "$ARGUMENTS" references a concept (e.g., "ai-assistant", "task-manager"):
+1. Check if recent brainstorming created concepts in `.claude/ideas/`
+2. If yes, use matching concept as foundation
 
-If no concept provided, follow this structured approach:
+
+If starting fresh, follow this structured approach:
 
 ### 1. Discovery & Context
 - Ask clarifying questions about the feature/product "$ARGUMENTS"
@@ -98,6 +97,13 @@ Create a comprehensive PRD with these sections:
 - Resource limitations
 
 #### Technical Considerations
+- Research latest packages: `npm view [package] version` or search "[package] latest $(date +%Y)"
+- **Compatibility Check (Required)**:
+  - Use `npx npm-check-updates --peer` to verify peer dependency compatibility
+  - Or check https://www.npmpeer.dev for compatible version combinations
+  - WebSearch: "[main-packages] compatibility issues" if mixing major frameworks
+  - Document any version constraints discovered
+- Specify versions: "Using Next.js 15.x with React 19.x (verified compatible)"
 - Technology stack recommendations (high-level)
 - Integration requirements (APIs, third-party services)
 - Data requirements and storage needs
