@@ -1,6 +1,6 @@
 # SAZ-CCPM: Natural Intelligence for Production Workflows
 
-[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.0-4b3baf)](https://github.com/Gravicity/SAZ-CCPM)
+[![SAZ-CCPM](https://img.shields.io/badge/SAZ--CCPM-v2.1-4b3baf)](https://github.com/Gravicity/SAZ-CCPM)
 [![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-d97757)](https://claude.ai/code)
 [![GitHub Issues](https://img.shields.io/badge/Powered%20by-GitHub%20Issues-1f2328)](https://docs.github.com/en/issues)
 [![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/Gravicity/SAZ-CCPM/blob/main/LICENSE)
@@ -36,6 +36,9 @@ First, initialize the project management system (one-time setup):
 # - Creates .claude/ directory structure
 # - Installs gh-sub-issue extension for task hierarchies
 # - Prepares your project for professional development workflow
+
+# Note: SAZ-CCPM automatically checks PM initialization status and will
+# remind you to run /pm:init if needed, preventing workflow issues
 ```
 
 #### For New Projects (Most Common - Brainstorming-First):
@@ -92,17 +95,23 @@ SAZ: 💡 Let me explore some concepts for your SaaS platform...
      [Begins building with specialized agents]
 ```
 
-### Intelligent Workflow Modes
+### Intelligent Two-Phase Workflow
 
-SAZ-CCPM automatically detects your intent and switches modes:
+SAZ-CCPM uses a two-phase approach for optimal routing:
 
-| Intent Pattern | Triggers | Routing |
-|----------------|----------|----------|
-| 🚨 **Emergency** | "urgent", "critical", "down", "broken", "production failing" | → code-analyzer OR file-analyzer (immediate) |
-| 💡 **Most Projects** | "SaaS dashboard", "e-commerce site", "add auth", "mobile app" | → brainstorming-specialist → project-manager |
-| 🎯 **Detailed Specs** | "Implement OAuth 2.0 with Firebase Auth and Google/GitHub providers" | → project-manager (can delegate to mcp-handler) |
+**Phase 1: Initial Assessment** (< 5 seconds)
+- ALL requests first go through project-manager for rapid assessment
+- Analyzes project state, checks PM initialization, determines optimal workflow
+
+**Phase 2: Specialized Execution**
+| Intent Pattern | Triggers | Final Routing |
+|----------------|----------|--------------|
+| 🚨 **Emergency** | "urgent", "critical", "down", "broken", "production failing" | → code-analyzer (fast-tracked) |
+| 💡 **Most Projects** | "SaaS dashboard", "e-commerce site", "add auth", "mobile app" | → brainstorming-specialist → implementation |
+| 🎯 **Detailed Specs** | "Implement OAuth 2.0 with Firebase Auth and Google/GitHub providers" | → direct implementation (with mcp-handler if needed) |
 | 🔌 **Pure Services** | "Firebase setup", "screenshot [URL]", "YouTube transcript" | → mcp-handler |
-| 🔍 **Analysis** | "bug", "error", "trace logic", "code review" | → code-analyzer OR file-analyzer OR test-runner |
+| 🔍 **Analysis** | "bug", "error", "trace logic", "code review" | → code-analyzer OR file-analyzer |
+| 🧪 **Testing** | "run tests", "test this", "are tests passing" | → test-runner (exclusive)
 
 
 ## 🎯 When to Brainstorm vs. Skip to Implementation
@@ -211,17 +220,25 @@ Why GitHub Issues?
 ## 📁 Project Structure
 
 ```
-your-project/
-├── CLAUDE.md            # Project instructions (auto-created)
+your-workspace/
+├── CLAUDE.md            # Workspace instructions (auto-created)
+├── my-project/          # Project 1 (in its own subfolder)
+│   ├── package.json
+│   ├── src/
+│   └── ...
+├── another-app/         # Project 2 (in its own subfolder)
+│   ├── requirements.txt
+│   ├── app/
+│   └── ...
 └── .claude/
     ├── agents/          # Specialized AI agents
     │   ├── brainstorming-specialist.md
-    │   ├── project-manager.md      # Workflow orchestrator
+    │   ├── project-manager.md      # Initial assessment & routing
     │   ├── mcp-handler.md          # Service integration gateway
     │   ├── file-analyzer.md
     │   ├── code-analyzer.md
-    │   ├── test-runner.md
-    │   └── [more specialists as needed]
+    │   ├── test-runner.md         # Exclusive test execution
+    │   └── parallel-worker.md      # Concurrent task execution
     ├── mcp-config/      # MCP service isolation
     │   ├── firebase.json           # Firebase integration
     │   ├── playwright.json         # Screenshot automation
@@ -238,15 +255,25 @@ your-project/
     │   └── [epic-name]/ # Epic workspace
     │       ├── epic.md  # Technical plan
     │       └── [#].md   # Task files
-    ├── prds/            # Product requirements
-    │   └── [feature].md # Enhanced PRD documents
+    ├── prds/            # Product requirements (with UI/UX sections)
+    │   └── [feature].md # Enhanced PRD with design wireframes
     ├── rules/           # Workflow automation
     │   ├── workflow-modes.md
-    │   ├── complexity-scaling.md
+    │   ├── project-structure.md   # Default subfolder organization
     │   └── saz-*.md     # Natural language rules
+    ├── saz-docs/        # SAZ-CCPM documentation (moved here on install)
+    │   ├── README.md
+    │   ├── CHANGELOG.md
+    │   └── LICENSE
     └── scripts/         # Automation scripts
         └── pm/          # PM shell scripts
 ```
+
+**Key Structure Principles:**
+- New projects are created in their own subfolders by default
+- Root directory stays clean with only .claude/ and project folders
+- SAZ-CCPM docs are in .claude/saz-docs/ to avoid conflicts
+- PRDs now include UI/UX design sections with wireframes
 
 ## 📋 Essential Commands
 
@@ -362,11 +389,15 @@ SAZ: 🚨 Emergency mode - Quick context scan...
 ## 🏆 Expected Benefits
 
 SAZ-CCPM is designed to deliver:
-- **Minimized context overhead** - Smart MCP gateway + agent delegation
+- **Minimized context overhead** - Smart MCP gateway + two-phase agent delegation
 - **Faster delivery** - Parallel execution + automated service integration
 - **Enhanced user experience** - Natural conversation with checkpoint workflows
 - **Professional workflows** - From brainstorming to production deployment
 - **Complete audit trail** - Every decision tracked in GitHub
+- **Smart initialization** - Automatic PM system checks prevent workflow issues
+- **Clean organization** - Projects in subfolders, docs in .claude/saz-docs/
+- **Better PRDs** - UI/UX design sections with wireframes and visual references
+- **Robust testing** - Exclusive test-runner delegation for reliable execution
 
 ## 🤝 Working with Teams
 
@@ -389,21 +420,30 @@ SAZ-CCPM scales from solo developers to enterprise teams:
 
 ## 🧠 Advanced Features
 
-### Intelligent Mode Detection & Context Management
-SAZ-CCPM detects your intent and applies the right workflow:
-- **Emergency keywords** → code-analyzer/file-analyzer → immediate fix
+### Intelligent Two-Phase Routing & Context Management
+
+**Phase 1: Initial Assessment** (All requests)
+- `project-manager` performs rapid assessment (< 5 seconds)
+- Checks PM initialization status automatically
+- Analyzes project state using `ls` command
+- Determines optimal workflow and routing
+
+**Phase 2: Specialized Execution**
+SAZ-CCPM routes to specialized agents based on assessment:
+- **Emergency keywords** → code-analyzer (fast-tracked for immediate fix)
 - **Vague ideas** → brainstorming-specialist → concept generation
-- **Clear requirements** → project-manager → full CCPM workflow
+- **Clear requirements** → direct implementation → full CCPM workflow
 - **External services** → mcp-handler → service integration
-- **Existing code** → code-analyzer → analysis and improvements
+- **Test requests** → test-runner (exclusive test execution)
+- **Existing code analysis** → code-analyzer → improvements
 
 Context optimization through specialized agents:
-- `brainstorming-specialist` for concept generation and exploration
-- `project-manager` for workflow orchestration and CCPM commands
+- `brainstorming-specialist` for concept generation with UI/UX design
+- `project-manager` for initial assessment and workflow routing
 - `mcp-handler` for external service integration (context-efficient)
 - `code-analyzer` for debugging and code analysis
 - `file-analyzer` for logs, configs, and large files
-- `test-runner` for test execution and validation
+- `test-runner` for exclusive test execution and validation
 - `parallel-worker` for concurrent task execution
 - Smart MCP gateway loads only required services (context-efficient)
 
@@ -507,8 +547,14 @@ Add instructions to `CLAUDE.md`:
 ### Common Issues
 
 **"Command not found"**
-- Run `/pm:init` first
+- SAZ-CCPM will automatically detect and prompt you to run `/pm:init`
+- If prompted manually, run `/pm:init` first
 - Check `.claude/commands/` exists
+
+**"PM system not initialized"**
+- SAZ-CCPM now automatically checks PM initialization status
+- Will add `/pm:init` to todos if GitHub CLI not authenticated
+- Will detect missing `.claude/prds/` or `.claude/epics/` directories
 
 **"Agent not available"**  
 - Restart Claude Code: `Ctrl+C` twice, then `claude --resume`
@@ -517,15 +563,22 @@ Add instructions to `CLAUDE.md`:
 **"GitHub sync failed"**
 - Verify `gh` CLI is authenticated: `gh auth status`
 - Check repository permissions
+- Ensure remote isn't pointing to SAZ-CCPM template repo
 
 **"Context overflow"**
 - Use parallel agents to distribute work
 - Run `/pm:clean` to archive completed tasks
+- Leverage specialized agents for focused work
 
 **"Lost context after restart"**
 - Run `/context:prime` to reload project understanding
 - Then `/pm:status` to see current work
 - Continue where you left off
+
+**"Tests not running properly"**
+- Always use test-runner agent for test execution
+- Never run tests directly with Bash commands
+- Check `.claude/scripts/test-and-log.sh` exists
 
 ## 🌟 Contributing
 

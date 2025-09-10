@@ -14,6 +14,14 @@
   - Adds /pm:init to todos if system not initialized
   - Prevents workflow issues before they occur
 
+### Documentation
+- Updated README.md to reflect all v2.1 improvements:
+  - Two-phase delegation workflow explanation
+  - Project subfolder organization
+  - PM initialization check feature
+  - Testing workflow improvements
+  - Updated troubleshooting section
+
 ### Changed
 - ✅ All requests now route through project-manager first (two-phase approach)
 - ✅ project-manager: workflow specialist → initial assessment agent
