@@ -99,6 +99,21 @@ conflicts_with: []  # Tasks that modify same files, e.g., [003, 004]
 ## Description
 Clear, concise description of what needs to be done
 
+## Project Structure Guidelines
+For tasks involving new project setup or package installation:
+- Create project in subfolder `{epic-name}/`
+- All project files go in the subfolder
+- Root directory stays clean with only .claude/ and project folders
+
+## Implementation Steps
+1. **Project Structure** (if creating new project):
+   ```bash
+   mkdir -p {epic-name}
+   cd {epic-name}
+   # All project files go here
+   ```
+2. [Other implementation steps...]
+
 ## Acceptance Criteria
 - [ ] Specific criterion 1
 - [ ] Specific criterion 2

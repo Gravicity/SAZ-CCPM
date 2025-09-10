@@ -155,6 +155,6 @@ echo "  1. Create your first PRD: /pm:prd-new <feature-name>"
 echo "  2. View help: /pm:help"
 echo "  3. Check status: /pm:status"
 echo ""
-echo "📚 Documentation: README.md"
+echo "📚 Documentation: .claude/saz-docs/README.md"
 
 exit 0

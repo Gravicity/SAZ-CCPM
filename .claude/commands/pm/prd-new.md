@@ -57,6 +57,8 @@ If no concept provided, follow this structured approach:
 
 ### 1. Discovery & Context
 - Ask clarifying questions about the feature/product "$ARGUMENTS"
+- **Check for visual references**: "Do you have any screenshots or examples of apps/sites you like?"
+- **If screenshots provided**: Analyze and extract design patterns, UI elements, flow concepts
 - Understand the problem being solved
 - Identify target users and use cases
 - Gather constraints and requirements
@@ -101,6 +103,52 @@ Create a comprehensive PRD with these sections:
 - Data requirements and storage needs
 - Security and compliance considerations
 - Performance and scalability expectations
+
+#### UI/UX Design
+
+**Interface Concept**
+- Visual style and overall aesthetic
+- Navigation patterns and user flow
+- Responsive design approach (mobile-first, desktop-first, adaptive)
+
+**Key Screens & Components**
+- List of main screens/views needed
+- Core UI components and their purpose
+- Layout structure for primary interfaces
+
+**Design References**
+- Similar apps/websites user likes: [If user provided examples]
+- Screenshots provided: [Reference any user-provided screenshots]
+- Wireframes: [Simple ASCII diagrams or descriptions]
+
+Example wireframe:
+```
++------------------+
+|   Header/Nav     |
++------+-----------+
+| Side |  Main     |
+| Menu | Content   |
+|      |           |
++------+-----------+
+```
+
+**Feature-to-UI Mapping**
+| Feature | UI Location | User Interaction |
+|---------|-------------|------------------|
+| Login | Top-right header | Click avatar icon |
+| Search | Top navigation | Type in search bar |
+| [Feature] | [Where in UI] | [How user accesses] |
+
+**Design System Considerations**
+- Component library preference (if any)
+- Accessibility requirements (WCAG 2.1 AA)
+- Brand consistency needs
+- Dark mode support (if applicable)
+
+**User Flow Integration**
+- How features connect in the user journey
+- Primary paths through the application
+- Entry and exit points for key workflows
 
 #### Implementation Roadmap
 **Phase 1: MVP**
@@ -168,6 +216,9 @@ Before saving the PRD, verify:
 - [ ] User stories include acceptance criteria
 - [ ] Success criteria are measurable
 - [ ] Technical considerations address key implementation areas
+- [ ] UI/UX design section includes interface concept and key screens
+- [ ] Feature-to-UI mapping is complete for all major features
+- [ ] Design references capture any user-provided examples
 - [ ] Implementation roadmap has clear MVP and full release phases
 - [ ] Risk assessment identifies both technical and business risks
 - [ ] Dependencies are clearly identified
