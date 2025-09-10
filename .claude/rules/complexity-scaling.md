@@ -93,7 +93,7 @@ When starting from brainstorming concepts, assess based on:
 
 ```bash
 # Comprehensive workflow
-/pm:prd-new-enhanced complex    # Detailed requirements
+/pm:prd-new complex             # Detailed requirements
 /pm:prd-parse complex           # Comprehensive epic
 /pm:epic-decompose complex      # Break into 10+ tasks
 /pm:issue-analyze complex       # Identify parallel streams
@@ -118,7 +118,7 @@ When starting from brainstorming concepts, assess based on:
 
 ```bash
 # Enterprise workflow
-/pm:prd-new-enhanced system     # Multi-stakeholder requirements
+/pm:prd-new system              # Multi-stakeholder requirements (comprehensive)
 /pm:prd-parse system            # System-wide epic
 /pm:epic-decompose system       # 20+ coordinated tasks
 /pm:issue-analyze system        # Complex dependency mapping

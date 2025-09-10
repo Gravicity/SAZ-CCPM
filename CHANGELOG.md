@@ -9,6 +9,7 @@
 - Archived deprecated framework-architect agent (replaced by /saz:evolve command)
 - Updated README to v2.2 with current capabilities
 - Created private /saz:evolve command for framework evolution workflow
+- **Removed prd-new-enhanced command** - Simplified to single adaptive /pm:prd-new command
 
 ### Files Modified
 
@@ -17,7 +18,11 @@
 - `.claude/commands/pm/issue-sync.md` - Updated template repo error message
 - `.claude/commands/pm/epic-sync.md` - Updated repository protection check
 - `.claude/commands/saz/evolve.md` - Created new framework evolution command
-- `README.md` - Updated to v2.2, removed obsolete flags, added new capabilities
+- `.claude/commands/pm/prd-new-enhanced.md` - **Deleted** (functionality merged into prd-new)
+- `.claude/agents/brainstorming-specialist.md` - Updated workflow recommendations
+- `.claude/rules/workflow-modes.md` - Removed enhanced command references
+- `.claude/rules/complexity-scaling.md` - Updated complex/enterprise workflows
+- `README.md` - Updated to v2.2, removed obsolete flags and commands
 - `.gitignore` - Added znotes/ and .claude/commands/saz/ to private files
 
 ## [Unreleased]

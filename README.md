@@ -301,7 +301,6 @@ While SAZ-CCPM works primarily through natural language, these commands give you
 
 # Or explicit commands:
 /pm:prd-new feature           # Create PRD (auto-detects recent concepts)
-/pm:prd-new-enhanced feature  # Force comprehensive planning (complex projects)
 /pm:prd-parse feature         # Convert PRD to technical plan
 /pm:epic-oneshot feature      # Skip PRD for simple tasks
 ```
@@ -493,8 +492,7 @@ Add instructions to `CLAUDE.md`:
 - `/pm:help` - Show command summary
 
 ### Product Planning
-- `/pm:prd-new [name]` - Create PRD through brainstorming
-- `/pm:prd-new-enhanced [name]` - Enhanced PRD with analysis
+- `/pm:prd-new [name]` - Create PRD (auto-detects concepts, scales to complexity)
 - `/pm:prd-parse [name]` - Convert PRD to technical epic
 - `/pm:prd-list` - List all PRDs
 - `/pm:prd-edit [name]` - Modify existing PRD

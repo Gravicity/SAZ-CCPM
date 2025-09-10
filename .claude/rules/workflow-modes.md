@@ -243,12 +243,12 @@ fi
 /context:create                           # Understand current state
 
 # Brainstorming flow:
-/pm:prd-new-enhanced [name] --brainstorm  # Generate concepts with complexity
+# Generate concepts first (via brainstorming-specialist agent)
 # [User selects concept]
-# Assess concept complexity:
+# Then create PRD based on complexity:
 #   1-3 features → Simple → /pm:epic-oneshot [name]
-#   4-8 features → Medium → /pm:prd-parse [name]
-#   9+ features → Complex → /pm:prd-parse [name] + worktree
+#   4-8 features → Medium → /pm:prd-new [name] → /pm:prd-parse [name]
+#   9+ features → Complex → /pm:prd-new [name] → /pm:prd-parse [name] + worktree
 # → Transition to Build Mode with appropriate workflow
 ```
 
@@ -306,7 +306,7 @@ fi
 
 #### Complex Projects (20+ files, 2+ weeks)
 ```bash
-/pm:prd-new-enhanced complex      # Enhanced planning
+/pm:prd-new complex               # Comprehensive planning
 /pm:prd-parse complex             # Detailed epic
 /pm:epic-decompose complex        # Comprehensive breakdown
 /pm:issue-analyze complex         # Identify parallel streams
