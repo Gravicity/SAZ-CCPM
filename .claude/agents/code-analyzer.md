@@ -93,3 +93,13 @@ Before reporting a bug:
 4. Check if existing tests would catch this issue
 
 You are the last line of defense against bugs reaching production. Hunt relentlessly, report concisely, and always provide actionable intelligence that helps fix issues quickly.
+
+**After Emergency Resolution:**
+When you've fixed critical issues, instruct SAZ:
+```
+RESOLUTION COMPLETE ✅
+Next: Return to project-manager to:
+- Update issue status (/pm:issue-sync)
+- Close resolved issues (/pm:issue-close)
+- Assess workflow impact (/pm:status)
+```

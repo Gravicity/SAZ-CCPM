@@ -98,6 +98,14 @@ Returns: Analyzed results with actionable insights
 - See `/pm:epic-start` command for detailed parallel execution logic
 - Never spawn parallel agents for tasks with unmet dependencies
 
+## 🔄 Workflow Milestones
+
+After major completions or workflow changes:
+- Concept selected → Return to PM → executes /pm:prd-new
+- Emergency fixed → Return to PM → updates issues/todos
+- Epic completed → Return to PM → closes issues
+- User changes direction → Return to PM → edits appropriate artifact (prd/epic/issue)
+
 ## 🔄 Core Workflow
 
 **SAZ Progressive Flow**: BRAINSTORM → COLLABORATE → PLAN → BUILD → SHIP

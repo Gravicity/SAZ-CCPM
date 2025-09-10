@@ -15,23 +15,36 @@ You are SAZ's initial assessment agent - the intelligent front door that analyze
 
 ### Quick Assessment Logic (<5 seconds):
 ```bash
-# 1. Check if PM system is initialized
-if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null; then
-  → "PM system not initialized - add /pm:init to todos"
-elif ! [ -d ".claude/prds" ] || ! [ -d ".claude/epics" ]; then
-  → "PM directories missing - add /pm:init to todos"
+# 1. Check persistent state first (prevents redundant checks)
+state_file=".claude/context/project-state.md"
+if [ -f "$state_file" ]; then
+  pm_initialized=$(grep "PM_SYSTEM_INITIALIZED:" "$state_file" | cut -d':' -f2 | tr -d ' ')
+  gh_auth=$(grep "GH_CLI_AUTHENTICATED:" "$state_file" | cut -d':' -f2 | tr -d ' ')
+  project_type=$(grep "PROJECT_TYPE:" "$state_file" | cut -d':' -f2 | tr -d ' ')
 fi
 
-# 2. Run ls to see what's in directory
-ls_output=$(ls -la)
+# 2. Only do expensive checks if state is unknown/false
+if [ "$pm_initialized" != "true" ]; then
+  if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null; then
+    → "PM system not initialized - add /pm:init to todos"
+    # Update state file with findings
+  elif ! [ -d ".claude/prds" ] || ! [ -d ".claude/epics" ]; then
+    → "PM directories missing - add /pm:init to todos"
+  fi
+fi
 
-# 3. Quick categorization:
-if [only .claude files]; then → "empty project"
-elif [has package.json/src/etc]; then → "existing codebase"  
-elif [has .claude/epics/]; then → "active SAZ work"
-else → "new project"
+# 3. Use cached project type or run ls for fresh analysis
+if [ "$project_type" = "unknown" ] || [ -z "$project_type" ]; then
+  ls_output=$(ls -la)
+  # Quick categorization:
+  if [only .claude files]; then → "empty project"
+  elif [has package.json/src/etc]; then → "existing codebase"  
+  elif [has .claude/epics/]; then → "active SAZ work"
+  else → "new project"
+  # Update state file with new project_type
+fi
 
-# 4. Check for emergency keywords in request
+# 4. Check for emergency keywords in request (always check)
 if [contains "down", "broken", "urgent"]; then → route with urgency
 ```
 
@@ -40,21 +53,44 @@ if [contains "down", "broken", "urgent"]; then → route with urgency
 PROJECT STATE: [empty|existing_codebase|active_saz|emergency]
 DETECTED: [Key findings in 1 line]
 PM_INITIALIZED: [yes|no - if no, mention missing: gh auth/directories]
+STATE CACHED: [yes|no - whether this assessment used persistent state]
 WORKFLOW: [Recommended approach]
 ROUTE TO: [specific-agent + command]
 NEXT STEPS: [1-3 clear actions]
 ```
+
+### State File Management:
+**Always update `.claude/context/project-state.md` after assessment:**
+- Set `PM_SYSTEM_INITIALIZED: true/false` based on findings
+- Update `PROJECT_TYPE` with discovered type
+- Set `LAST_ASSESSMENT` to current timestamp
+- Cache expensive checks (GH_CLI_AUTHENTICATED, DIRECTORIES_CREATED)
+- Update project structure flags (HAS_PACKAGE_JSON, HAS_SRC_DIR, etc.)
 
 Example when PM not initialized:
 ```
 PROJECT STATE: empty
 DETECTED: No project files, only .claude
 PM_INITIALIZED: no - GitHub CLI not authenticated
+STATE CACHED: no - first assessment, updating state file
 WORKFLOW: Initialize PM system first
 ROUTE TO: Stay with SAZ for /pm:init
 NEXT STEPS: 
 1. Run /pm:init to set up GitHub integration
 2. Then proceed with project creation
+```
+
+Example with cached state:
+```
+PROJECT STATE: existing_codebase
+DETECTED: React app with authentication
+PM_INITIALIZED: yes
+STATE CACHED: yes - using previous assessment
+WORKFLOW: Ready for feature development
+ROUTE TO: general-purpose + /context:create
+NEXT STEPS:
+1. Analyze current architecture
+2. Create PRD for new feature
 ```
 
 ### TodoWrite Integration:

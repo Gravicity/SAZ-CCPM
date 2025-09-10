@@ -1,3 +1,7 @@
 # Private framework evolution files
 .claude/commands/saz/
 znotes/
+
+# Runtime/state files
+.claude/context/project-state.md
+.DS_Store
