@@ -32,306 +32,230 @@ Automated app discovery and cloning analysis workflow using MCP ecosystem.
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps silently:
-
-### Input Validation
-1. **Parse search focus:**
-   - Extract primary search terms from "$ARGUMENTS"
-   - Map to appropriate search strategies
-   - If "trending", prioritize recent launches
-
-2. **Validate parameters:**
-   - Parse MRR range into min/max values
-   - Ensure build-weeks is 1-12
-   - Validate category against allowed types
-
-3. **Check existing data:**
-   - Look for `research-results/profitable-apps-database.json`
-   - If exists, load for deduplication
-   - Track last scout timestamp
+1. Parse search focus from "$ARGUMENTS"
+2. Validate MRR range and category parameters  
+3. Check for existing `research-results/*.json` to avoid duplicates
 
 ## Instructions
 
 You are conducting automated app discovery using the SAZ-CCPM MCP ecosystem for: **$ARGUMENTS**
 
-### Phase 1: Discovery Sources
+### Phase 1: Discovery Process
 
-Execute searches across multiple sources IN PARALLEL using Task tool:
+Execute searches IN PARALLEL with 3-5 second delays between same-domain requests:
 
-#### 1.1 Twitter/X Search (EXA MCP)
+#### 1.1 High-Signal Search Patterns
 ```
-Search queries based on "$ARGUMENTS":
-- "[focus] $10k MRR"
-- "indie hacker [focus] monthly revenue"
-- "just launched [focus] making $"
-- "solo founder [focus] revenue update"
-- "[focus] hit $5000 per month"
+Revenue-focused (Priority 1):
+- "[focus] $*k MRR"
+- "[focus] revenue per month"
+- "built [focus] making $"
+
+Milestone/Launch (Priority 2):
+- "launched [focus] customers"
+- "[focus] hit $5000"
+- "Show HN: [focus]"
+
+Competition (Priority 3):
+- "alternative to [focus] cheaper"
+- "[focus] vs" comparison
 ```
 
-#### 1.2 Trending Topics (Playwright MCP)
+#### 1.2 Primary Data Sources
 ```
-Sites to crawl:
-- explodingtopics.com (filter by [focus])
-- trends.google.com (related to [focus])
+Revenue Transparency (Most Reliable):
+- baremetrics.com/open-startups
+- indiehackers.com/products?revenueVerified=true
+- microacquire.com/startups
+
+Launch/Discovery Platforms:
 - producthunt.com/topics/[focus]
+- alternativeto.net/software/[competitor]
+- explodingtopics.com/topics-last-6-months
+
+Note: Rotate domains, 3-8 second delays with jitter
 ```
 
-#### 1.3 Community Mining (EXA MCP)
+#### 1.3 Community Sources
 ```
-Reddit searches:
-- "r/SaaS [focus] revenue"
-- "r/entrepreneur [focus] MRR"
-- "r/SideProject [focus] profitable"
-- "r/IndieHackers [focus] milestone"
+Reddit (High-Signal):
+- "r/SaaS [focus] reached MRR"
+- "r/entrepreneur [focus] paying customers"
+- "r/IndieHackers AMA [focus] revenue"
+
+HackerNews:
+- "Show HN: [focus]" (comments>50)
+- "Launch HN: [focus]"
+
+Twitter/LinkedIn:
+- "#buildinpublic [focus] MRR"
+- "[focus] proud to announce revenue"
 ```
 
-#### 1.4 Market Research (WebSearch)
+#### 1.4 Market Research
 ```
-General searches:
-- "[focus] alternatives making money"
-- "profitable [focus] apps 2024-2025"
-- "[focus] app revenue statistics"
-- "best [focus] to build solo"
+- "[competitor] alternatives revenue"
+- "case study [category] $10k MRR"
+- "micro-saas [category] opportunities"
 ```
 
-### Phase 2: Data Extraction
+### Phase 2: Data Extraction (Essentials Only)
 
-For each discovered app, extract:
+**Use `null` for unknown data - NEVER hallucinate.**
 
 ```javascript
 {
-  "name": "App Name",
-  "category": "chrome-extension|ai-wrapper|api|no-code|saas",
-  "description": "What it does",
-  "mrr": 0, // Monthly recurring revenue in USD
-  "users": "Number or estimate",
-  "tech_stack": "Technologies used",
-  "build_time_weeks": 0, // Estimated build time
-  "team_size": "solo|small|team",
-  "marketing_channels": ["channel1", "channel2"],
-  "founded": "YYYY-MM",
-  "growth_rate": "X% monthly",
-  "url": "website or product page",
-  "source": "where we found this",
-  "discovered_date": "ISO date"
+  "name": "App Name",  // Required
+  "category": "chrome-extension|ai-wrapper|api|no-code|saas",  // or null
+  "description": "What it does",  // or null
+  "mrr": 0,  // Monthly recurring revenue, or null
+  "users": "Number or estimate",  // or null
+  "growth_rate": "X% monthly",  // or null
+  "url": "website",  // or null
+  "source": "where found",  // Required
+  "discovered_date": "ISO date",  // Required
+  "data_confidence": "high|medium|low"
 }
 ```
 
-### Phase 3: Scoring Algorithm
+**Extract only if explicitly stated:**
+- MRR: "making $5k/month" → `"mrr": 5000`
+- Users: "10,000 users" → `"users": "10000"`
+- Growth: "growing 20% monthly" → `"growth_rate": "20"`
 
-Score each app 0-100 based on:
+**Defer to app-analyze phase:** tech_stack, team_size, marketing_channels, build_time
+
+### Phase 3: Quick Scoring
+
+Score ALL apps (max 40) for initial ranking:
 
 ```python
 def calculate_clone_score(app):
     score = 0
+    confidence = 1.0
     
-    # MRR Score (30 points)
-    if 5000 <= app.mrr <= 50000:
-        score += 30
-    elif 3000 <= app.mrr < 5000:
-        score += 20
-    elif app.mrr > 50000:
-        score += 10  # Too complex
+    # Count known critical fields
+    known = sum(1 for f in ['mrr', 'users', 'growth_rate'] 
+                if app.get(f) is not None)
+    if known < 2: confidence = 0.5
     
-    # Build Complexity (25 points)
-    if app.build_time_weeks <= 2:
-        score += 25
-    elif app.build_time_weeks <= 4:
-        score += 15
-    else:
-        score += 5
+    # MRR (40 points - most important for scout)
+    if app.mrr:
+        if 5000 <= app.mrr <= 50000: score += 40
+        elif 3000 <= app.mrr < 5000: score += 25
+        elif app.mrr > 50000: score += 10
     
-    # Market Demand (20 points)
-    if app.growth_rate > 20:
-        score += 20
-    elif app.growth_rate > 10:
-        score += 15
-    elif app.growth_rate > 5:
+    # Growth (30 points)
+    if app.growth_rate:
+        rate = int(app.growth_rate.split('%')[0]) if '%' in str(app.growth_rate) else app.growth_rate
+        if rate > 20: score += 30
+        elif rate > 10: score += 20
+        elif rate > 5: score += 10
+    
+    # Category opportunity (20 points)
+    if app.category in ['ai-wrapper', 'chrome-extension', 'no-code']:
+        score += 20  # High opportunity categories
+    elif app.category:
         score += 10
     
-    # Competition (15 points)
-    # Assess based on category saturation
+    # Users/traction (10 points)  
+    if app.users: score += 10
     
-    # Marketing Ease (10 points)
-    if "viral" in app.marketing_channels:
-        score += 10
-    elif "seo" in app.marketing_channels:
-        score += 7
-    
-    return score
+    app['clone_score'] = int(score * confidence)
+    app['score_confidence'] = 'high' if known >= 2 else 'low'
+    return app['clone_score']
 ```
 
-### Phase 4: Competitive Analysis
+### Phase 4: Save All Results
 
-For top 10 scoring apps, generate:
-
-#### 4.1 Improvement Opportunities
-- Missing features from user complaints
-- UI/UX weaknesses
-- Platform limitations
-- Pricing gaps
-
-#### 4.2 Clone Strategy
-- **Name suggestions**: 3 alternatives
-- **Positioning**: How to differentiate
-- **Tech stack**: Optimal implementation
-- **MVP features**: Core functionality for launch
-- **Growth strategy**: Initial marketing approach
-
-#### 4.3 Implementation Roadmap
-```markdown
-## Week 1: Foundation
-- [ ] Set up project structure
-- [ ] Core functionality
-- [ ] Basic UI
-
-## Week 2: MVP
-- [ ] Payment integration
-- [ ] User authentication
-- [ ] Landing page
-
-## Week 3: Polish
-- [ ] Bug fixes
-- [ ] Performance optimization
-- [ ] Beta testing
-
-## Week 4: Launch
-- [ ] Product Hunt preparation
-- [ ] Marketing materials
-- [ ] Go live
-```
-
-### Phase 5: Output Generation
-
-#### 5.1 Save JSON Database
-Path: `research-results/scout-$(date +%Y%m%d)-$ARGUMENTS.json`
+Path: `research-results/scout-raw-$(date +%Y%m%d-%H%M%S)-$ARGUMENTS.json`
 
 ```json
 {
   "metadata": {
     "scout_date": "ISO date",
     "search_focus": "$ARGUMENTS",
-    "parameters": {
-      "mrr_range": "min-max",
-      "build_weeks": "max",
-      "category": "type"
-    },
-    "apps_found": 0,
-    "apps_analyzed": 0
+    "apps_discovered": 0,
+    "max_score": 0
   },
-  "apps": [...],
-  "recommendations": {
-    "top_pick": {},
-    "runners_up": [],
-    "quick_wins": []
-  }
+  "all_apps": [  // Up to 40, sorted by score
+    {
+      "name": "App Name",
+      "category": "type",
+      "description": "What it does",
+      "mrr": 0,
+      "users": "count",
+      "growth_rate": "X%",
+      "url": "website",
+      "source": "where found",
+      "clone_score": 85,
+      "score_confidence": "high|low"
+    }
+  ]
 }
 ```
 
-#### 5.2 Generate Markdown Report
-Path: `research-results/scout-$(date +%Y%m%d)-$ARGUMENTS.md`
+### Phase 5: Top 10 Quick Analysis
+
+For top 10 apps only, identify:
+- Key improvement opportunity
+- Simple differentiation angle
+- Estimated build complexity (1-4 weeks)
+
+**Note:** Detailed competitive analysis deferred to `/research:app-analyze` command
+
+### Phase 6: Final Report
+
+Path: `research-results/scout-report-$(date +%Y%m%d)-$ARGUMENTS.md`
 
 ```markdown
 # App Scout Report: $ARGUMENTS
 
-## Executive Summary
-- Apps discovered: X
-- Apps meeting criteria: Y
-- Top opportunity: [App Name] ($MRR, score/100)
+## Summary
+- Apps found: X (scored: Y)
+- Top opportunity: [App] ($MRR, score/100)
 
-## Top 5 Opportunities
-[Detailed analysis of each]
+## Top 10 Ranking
+| Rank | App | MRR | Score | Quick Take |
+|------|-----|-----|-------|------------|
+| 1 | Name | $X | Y/100 | One-line insight |
 
-## Quick Wins (Build in 1 week)
-[List of simplest apps]
+## Next Steps
+- Score > 80: Run `/research:app-analyze [top-app]`
+- Score 50-80: Review top 3 opportunities
+- Score < 50: Try different search focus
 
-## Market Insights
-[Patterns and trends discovered]
-
-## Recommended Action
-[Specific next steps]
+## Data: `scout-raw-{timestamp}.json`
 ```
 
-### Phase 6: Automation Pipeline
+### Phase 7: Next Actions
 
-If high-scoring app found (score > 80):
-
-1. **Auto-generate PRD**:
-   ```bash
-   /pm:prd-new [app-clone-name]
-   ```
-
-2. **Create implementation epic**:
-   ```bash
-   /pm:prd-parse [app-clone-name]
-   ```
-
-3. **Set up monitoring**:
-   - Track original app for updates
-   - Monitor competitor launches
-   - Watch for market changes
+If score > 80: Suggest `/research:app-analyze [app-name]` for deep dive
+If score > 90: Auto-trigger `/pm:prd-new [app-clone-name]`
 
 ### Quality Checks
 
-Before finalizing results:
-- [ ] Verify MRR data from multiple sources
-- [ ] Cross-reference user counts
-- [ ] Validate tech stack feasibility
-- [ ] Confirm no legal/TOS issues
-- [ ] Check for existing clones
-- [ ] Assess market saturation
+**Data Integrity:**
+- Use null for unverified data
+- Cite sources for all stats
+- Flag old data (>6 months)
+
+**Acceptable sources:** Founder statements, official pages, transparency reports
+**Reject:** User guesses, competitor claims, estimates
 
 ### Post-Scout Actions
 
-After successful scout:
-1. Display summary: "✅ Found X apps, Y meet criteria, Z are high-opportunity"
-2. Show top 3 recommendations with scores
-3. Suggest next step based on findings:
-   - If score > 80: "Ready to build! Run: /build:start [app-name]"
-   - If score 60-80: "Good opportunities. Review report for best fit"
-   - If score < 60: "Limited opportunities. Try different search focus"
+1. Display: "✅ Found X apps, top score: Y/100"
+2. Show top 3 with scores
+3. Next step:
+   - Score > 80: `/research:app-analyze [top-app]`
+   - Score < 60: Try different search focus
 
-### Error Handling
 
-- **No results**: Expand search terms, try related categories
-- **API limits**: Use cached data, schedule retry
-- **Invalid data**: Flag and skip, continue with others
-- **MCP failures**: Fallback to WebSearch tool
+## Next Commands
 
-## Advanced Options
+- **Deep dive**: `/research:app-analyze [app-name]` - Detailed analysis
+- **Build PRD**: `/pm:prd-new [app-name]` - Start building
+- **New search**: `/research:app-scout [different-focus]` - Try another niche
 
-### Continuous Monitoring Mode
-```
-/research:app-scout "trending" --monitor daily
-```
-Sets up daily automated scouts with change detection
-
-### Competitive Tracking
-```
-/research:app-scout --track "competitor-name"
-```
-Monitors specific competitor for changes
-
-### Bulk Analysis
-```
-/research:app-scout --input-file "apps-list.txt"
-```
-Analyzes predefined list of apps
-
-## Integration with SAZ-CCPM
-
-This command integrates with:
-- `/pm:prd-new` - Create PRD for promising apps
-- `/pm:epic-start` - Begin implementation
-- `/build:start` - Quick prototype generation
-- `/research:analyze` - Deep dive on specific app
-
-## Success Metrics
-
-Track scout effectiveness:
-- Apps discovered per scout
-- Score accuracy (vs actual build success)
-- Time to first customer
-- MRR achievement vs projection
-
-Remember: The goal is finding apps that can reach $5k+ MRR within 6 months with minimal marketing spend.
+**Goal**: Find apps reaching $5k+ MRR in 6 months with minimal marketing.

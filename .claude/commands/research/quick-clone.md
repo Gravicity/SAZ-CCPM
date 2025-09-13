@@ -4,430 +4,437 @@ allowed-tools: Task, Read, Write, MultiEdit, Bash, TodoWrite
 
 # Quick Clone
 
-Rapidly scaffold a clone based on analyzed apps from the database.
+Generate a detailed, hour-by-hour implementation plan for rapidly cloning an analyzed app.
 
 ## Usage
 ```
-/research:quick-clone <app-name-from-db> [--name <clone-name>] [--stack <tech>] [--days <target>]
+/research:quick-clone <app-name> [--name <clone-name>] [--days <target>] [--focus <priority>]
 ```
 
 ## Examples
 ```
-/research:quick-clone "easy-folders" --name "FolderGPT" --days 7
-/research:quick-clone "css-scan" --name "StyleSnap" --stack nextjs
-/research:quick-clone "bank-statement-converter" 
+/research:quick-clone "fasttrack" --days 7 --focus speed
+/research:quick-clone "scout:rank-3" --name "QuickSync" 
+/research:quick-clone "analyze:latest" --days 14
 ```
 
 ## Options
-- `--name <clone-name>`: Name for your clone. Default: generates suggestion
-- `--stack <tech>`: Tech stack (nextjs|react|vue|svelte|chrome). Default: auto-selects
-- `--days <target>`: Target days to MVP (7|14|21|30). Default: 14
-- `--features <list>`: Comma-separated MVP features. Default: core features only
+- `--name <clone-name>`: Use this name instead of the one from analysis
+- `--days <target>`: Target days to MVP (3|7|14|21). Default: 7
+- `--focus <priority>`: Primary focus (speed|features|polish). Default: speed
 
 ## Instructions
 
-You are rapidly scaffolding a clone of: **$ARGUMENTS**
+### Context Loading Phase
 
-### Phase 1: Load App Data
+#### Check for Previous Analysis
+```javascript
+// Smart input handling
+const input = "$ARGUMENTS";
 
-#### 1.1 Fetch from Database
-```bash
-# Read the profitable apps database
-cat research-results/profitable-apps-database.json | jq '.apps[] | select(.name=="$ARGUMENTS")'
+// Check multiple sources
+const sources = {
+  analysis: glob('research-results/analysis-*.md'),  // Recent deep analysis
+  scout: glob('research-results/scout-raw-*.json'), // Scout database
+  direct: input.startsWith('http') ? input : null   // Direct URL
+};
+
+// Load context from most relevant source
+const context = loadPreviousDecisions(sources);
+
+if (!context.appData) {
+  console.log("⚠️ No previous analysis found. Run /research:app-analyze first for better results");
+  // Proceed with minimal analysis or exit
+}
 ```
 
-If not found, check for partial match or suggest alternatives.
-
-#### 1.2 Extract Clone Requirements
+#### Extract Key Decisions
 ```javascript
-const appData = {
-  original_name: "from database",
-  mrr: "current MRR",
-  tech_stack: "original stack",
-  features: ["core features"],
-  improvements: ["our 1% better additions"],
-  build_time_weeks: "estimated time"
+const planContext = {
+  // From previous analysis
+  chosenName: context.branding?.selected || "$NAME",
+  techStack: context.techDecisions || autoDetect(),
+  differentiators: context.uniqueFeatures || [],
+  competitors: context.competition || [],
+  targetUsers: context.market?.segment || "general",
+  
+  // From scout data
+  mrr: context.mrr || null,
+  category: context.category || detectFromUrl(),
+  
+  // User overrides
+  userProvidedName: "$NAME" || null,
+  targetDays: "$DAYS" || 7,
+  focus: "$FOCUS" || "speed"
 };
 ```
 
-### Phase 2: Generate Clone Specification
+### Adaptive Planning Generation
 
-#### 2.1 Name Generation (if not provided)
+#### Project Type Detection
 ```javascript
-function generateCloneName(originalName) {
-  // Strategies:
-  // 1. Add descriptor: "Smart" + Original
-  // 2. Rhyme/similar: "TypeMind" -> "TypeGenius"
-  // 3. Feature focus: "FolderOrganizer" -> "FolderSync"
-  // 4. Platform specific: "ChromeSwiper"
+function detectProjectType(context) {
+  // Adaptive planning based on app category
+  const projectTypes = {
+    'chrome-extension': ChromeExtensionPlan,
+    'ai-wrapper': AIWrapperPlan,
+    'saas': SaaSPlan,
+    'no-code': NoCodeToolPlan,
+    'api-service': APIServicePlan,
+    'mobile': MobileAppPlan,
+    'marketplace': MarketplacePlan
+  };
   
-  return suggestions;
+  return projectTypes[context.category] || SaaSPlan;
 }
+
+// Generate contextually appropriate plan
+const PlanTemplate = detectProjectType(planContext);
+const detailedPlan = new PlanTemplate(planContext).generate();
 ```
 
-#### 2.2 Feature Prioritization
+## Adaptive Implementation Plans
+
+**IMPORTANT**: The following plans are **examples** that adapt based on project type. The actual plan will be customized for your specific clone.
+
+### Example: Chrome Extension Clone Plan
+
 ```markdown
-## MVP Features (Week 1)
-Must have for launch:
-- [ ] Core feature 1
-- [ ] Core feature 2
-- [ ] Payment integration
-- [ ] Basic auth
+# Quick Clone Plan: [Extension Name]
+*Cloning: [Original] | Category: Chrome Extension | Timeline: 7 days*
 
-## Quick Wins (Week 2)
-1% better additions:
-- [ ] Improvement 1
-- [ ] Improvement 2
+## Day 1: Extension Foundation (8 hours)
 
-## Future Features (Post-launch)
-- [ ] Advanced feature 1
-- [ ] Advanced feature 2
+### Hour 1-2: Project Setup & Architecture
+- [ ] Create extension directory structure:
+  ```
+  /extension
+    /src
+      /background
+      /content
+      /popup
+      /options
+    /public
+      manifest.json
+      /icons
+  ```
+- [ ] Configure manifest.json with minimal permissions
+- [ ] Set up TypeScript and webpack for extension bundling
+- [ ] Configure hot-reload for development
+
+### Hour 3-4: Core Extension Functionality
+- [ ] Implement background service worker
+- [ ] Create message passing system
+- [ ] Set up Chrome storage API for settings
+- [ ] Build basic popup UI with React/Vue
+
+### Hour 5-6: Content Script Implementation
+- [ ] Inject content script on target pages
+- [ ] Create DOM manipulation functions
+- [ ] Implement [key differentiator #1]
+- [ ] Add MutationObserver for dynamic content
+
+### Hour 7-8: Testing & Permissions
+- [ ] Test in Chrome developer mode
+- [ ] Verify minimal permissions needed
+- [ ] Create options page for settings
+- [ ] Test cross-origin requests if needed
+
+## Day 2: Core Features
+[Specific to extension functionality]
+
+## Day 3: Polish & Store Prep
+- Chrome Web Store assets
+- Privacy policy
+- Promotional images
 ```
 
-### Phase 3: Project Scaffolding
+### Example: AI Wrapper Clone Plan
 
-#### 3.1 Create Project Structure
-```bash
-# Create project directory
-mkdir -p $CLONE_NAME
-cd $CLONE_NAME
-
-# Initialize based on stack
-if [[ "$STACK" == "nextjs" ]]; then
-  npx create-next-app@latest . --typescript --tailwind --app
-elif [[ "$STACK" == "chrome" ]]; then
-  npx plasmo init
-fi
-
-# Set up standard directories
-mkdir -p src/components src/lib src/hooks src/types
-mkdir -p public/images public/fonts
-mkdir -p docs tests
-```
-
-#### 3.2 Install Dependencies
-```bash
-# Core dependencies based on app type
-npm install @supabase/supabase-js stripe @vercel/analytics
-
-# Development dependencies
-npm install -D @types/node prettier eslint vitest
-```
-
-### Phase 4: Generate Core Files
-
-#### 4.1 Environment Configuration
-Create `.env.local`:
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-
-# Stripe
-STRIPE_SECRET_KEY=sk_test_xxx
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
-
-# App Config
-NEXT_PUBLIC_APP_NAME=$CLONE_NAME
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-#### 4.2 Authentication Boilerplate
-Create `src/lib/auth.ts`:
-```typescript
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-export async function signUp(email: string, password: string) {
-  // Implementation
-}
-
-export async function signIn(email: string, password: string) {
-  // Implementation
-}
-```
-
-#### 4.3 Payment Integration
-Create `src/lib/stripe.ts`:
-```typescript
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
-})
-
-export async function createCheckoutSession(priceId: string) {
-  // Implementation
-}
-
-export async function createCustomerPortal(customerId: string) {
-  // Implementation
-}
-```
-
-### Phase 5: Feature Implementation
-
-#### 5.1 Core Feature Templates
-Based on app type, generate:
-
-**For Chrome Extensions:**
-```javascript
-// manifest.json
-{
-  "manifest_version": 3,
-  "name": "$CLONE_NAME",
-  "version": "1.0.0",
-  "permissions": ["storage", "tabs"],
-  "action": {
-    "default_popup": "popup.html"
-  }
-}
-```
-
-**For SaaS Apps:**
-```typescript
-// src/app/dashboard/page.tsx
-export default function Dashboard() {
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      {/* Core feature components */}
-    </div>
-  )
-}
-```
-
-**For API Services:**
-```typescript
-// src/app/api/v1/[endpoint]/route.ts
-export async function POST(request: Request) {
-  // API implementation
-}
-```
-
-### Phase 6: UI/UX Setup
-
-#### 6.1 Landing Page
-Create `src/app/page.tsx`:
-```typescript
-export default function Home() {
-  return (
-    <div>
-      {/* Hero Section */}
-      <section>
-        <h1>$CLONE_NAME</h1>
-        <p>$TAGLINE</p>
-        <button>Get Started</button>
-      </section>
-      
-      {/* Features */}
-      <section>
-        {/* Feature grid */}
-      </section>
-      
-      {/* Pricing */}
-      <section>
-        {/* Pricing cards */}
-      </section>
-    </div>
-  )
-}
-```
-
-#### 6.2 Component Library
-Create reusable components:
-```typescript
-// src/components/ui/button.tsx
-// src/components/ui/card.tsx
-// src/components/ui/input.tsx
-// src/components/ui/modal.tsx
-```
-
-### Phase 7: Testing Setup
-
-#### 7.1 Test Configuration
-Create `vitest.config.ts`:
-```typescript
-import { defineConfig } from 'vitest/config'
-
-export default defineConfig({
-  test: {
-    environment: 'jsdom',
-    setupFiles: './tests/setup.ts',
-  },
-})
-```
-
-#### 7.2 Initial Tests
-Create `tests/auth.test.ts`:
-```typescript
-describe('Authentication', () => {
-  test('should sign up new user', async () => {
-    // Test implementation
-  })
-})
-```
-
-### Phase 8: Deployment Preparation
-
-#### 8.1 Docker Configuration
-Create `Dockerfile`:
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-CMD ["npm", "start"]
-```
-
-#### 8.2 CI/CD Pipeline
-Create `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
-      - uses: vercel/action@v20
-```
-
-### Phase 9: Documentation
-
-#### 9.1 README Generation
-Create comprehensive README.md with:
-- Project overview
-- Quick start guide
-- Feature list
-- Tech stack
-- Deployment instructions
-- Contributing guidelines
-
-#### 9.2 Launch Checklist
-Create `docs/LAUNCH_CHECKLIST.md`:
 ```markdown
-# Launch Checklist
+# Quick Clone Plan: [AI App Name]
+*Cloning: [Original] | Category: AI Wrapper | Timeline: 7 days*
 
-## Pre-launch (Day -7)
-- [ ] Feature freeze
-- [ ] Beta testing with 10 users
-- [ ] Fix critical bugs
-- [ ] Prepare marketing materials
+## Day 1: AI Infrastructure (8 hours)
 
-## Launch Day
+### Hour 1-2: Project & API Setup
+- [ ] Next.js app with TypeScript
+- [ ] Environment variables for API keys:
+  ```
+  OPENAI_API_KEY=
+  ANTHROPIC_API_KEY=
+  STRIPE_SECRET_KEY=
+  SUPABASE_URL=
+  ```
+- [ ] Install AI SDKs and streaming libraries
+- [ ] Set up Vercel KV for rate limiting
+
+### Hour 3-4: Token Management System
+- [ ] Create token counting utility
+- [ ] Implement usage tracking per user
+- [ ] Build cost calculation system
+- [ ] Add rate limiting middleware
+
+### Hour 5-6: Streaming Response UI
+- [ ] Server-sent events setup
+- [ ] Streaming text component
+- [ ] Loading states and animations
+- [ ] Error boundary for API failures
+
+### Hour 7-8: Prompt Engineering
+- [ ] Create prompt templates
+- [ ] Build prompt optimization system
+- [ ] Implement [key differentiator #1]
+- [ ] Add prompt versioning
+
+## Day 2: User Management & Billing
+[Specific to AI token/credit management]
+
+## Day 3: Differentiation Features
+- Advanced prompt chaining
+- Custom model selection
+- Export functionality
+```
+
+### Example: SaaS Clone Plan
+
+```markdown
+# Quick Clone Plan: [SaaS Name]
+*Cloning: [Original] | Category: SaaS | Timeline: 7 days*
+
+## Day 1: Foundation & Database (8 hours)
+
+### Hour 1-2: Full-Stack Setup
+- [ ] Create T3 app or Next.js + Prisma
+- [ ] PostgreSQL database setup
+- [ ] Configure authentication (Clerk/Auth.js)
+- [ ] Set up GitHub repo and Vercel
+
+### Hour 3-4: Data Model & APIs
+- [ ] Design database schema
+- [ ] Create Prisma migrations
+- [ ] Build CRUD API endpoints
+- [ ] Implement RLS policies
+
+### Hour 5-6: Core Business Logic
+- [ ] Main feature implementation
+- [ ] Business rule validation
+- [ ] Data processing pipeline
+- [ ] Background job setup if needed
+
+### Hour 7-8: Basic UI
+- [ ] Dashboard layout
+- [ ] Navigation structure
+- [ ] Core feature UI
+- [ ] Responsive design check
+
+## Day 2: Authentication & Payments
+[Standard SaaS requirements]
+```
+
+## Feature-by-Feature Detailed Breakdown
+
+Based on the app being cloned, generate specific implementation tasks:
+
+```markdown
+## Feature: [Specific Feature Name]
+
+### Technical Requirements
+- Database tables needed
+- API endpoints required
+- Third-party services
+- Frontend components
+
+### Implementation Steps (3 hours)
+
+#### Hour 1: Backend
+- [ ] Create database migration
+- [ ] Build API endpoint with validation
+- [ ] Add authentication checks
+- [ ] Implement business logic
+- [ ] Write unit tests
+
+#### Hour 2: Frontend
+- [ ] Create React/Vue component
+- [ ] Connect to API with SWR/React Query
+- [ ] Add loading and error states
+- [ ] Implement optimistic updates
+- [ ] Style with Tailwind
+
+#### Hour 3: Integration & Testing
+- [ ] End-to-end testing
+- [ ] Error handling
+- [ ] Performance optimization
+- [ ] Documentation
+```
+
+## Import Tool Implementation
+
+Since competing with [Original], implement import feature:
+
+```markdown
+## Day 3: Import from [Original] (4 hours)
+
+### Research Phase (30 minutes)
+- [ ] Analyze [Original]'s export format
+- [ ] Document field mappings
+- [ ] Identify data transformations
+
+### Implementation (3.5 hours)
+
+#### Backend (2 hours)
+- [ ] Create /api/import endpoint
+- [ ] Parse [Original]'s format (CSV/JSON)
+- [ ] Data validation and sanitization
+- [ ] Batch processing for large imports
+- [ ] Progress tracking with WebSockets
+
+#### Frontend (1.5 hours)
+- [ ] Drag-and-drop upload component
+- [ ] Import progress indicator
+- [ ] Error reporting UI
+- [ ] Success confirmation with stats
+- [ ] "Import from [Original]" marketing page
+```
+
+## Launch Preparation Checklist
+
+```markdown
+## Day 7: Launch Day Preparation
+
+### Morning (4 hours): Final Testing
+- [ ] Complete user flow testing
+- [ ] Payment flow with real cards
+- [ ] Import tool with sample data
+- [ ] Mobile responsiveness
+- [ ] Browser compatibility
+- [ ] Load testing with k6/Artillery
+
+### Afternoon (4 hours): Launch Assets
+
+#### ProductHunt Preparation
+- [ ] Gallery images (1270x760px):
+  - Hero shot showing main feature
+  - Comparison with [Original]
+  - Unique differentiator demo
+  - Pricing advantage
+- [ ] 60-character tagline
+- [ ] 260-character description
+- [ ] Hunter lined up
+
+#### Marketing Pages
+- [ ] Landing page with clear value prop
+- [ ] /compare/[original] page
+- [ ] /switch-from-[original] guide
+- [ ] Pricing page with launch discount
+
+#### Content Ready
+- [ ] Reddit post (3 variations)
+- [ ] Twitter thread draft
+- [ ] HackerNews Show HN post
+- [ ] Cold email templates
+```
+
+## Go-Live Checklist
+
+```markdown
+## Launch Execution
+
+### T-4 Hours
 - [ ] Deploy to production
-- [ ] Submit to Product Hunt
-- [ ] Post on social media
-- [ ] Email list announcement
+- [ ] Verify all env variables
+- [ ] Enable error tracking (Sentry)
+- [ ] Set up monitoring (Vercel Analytics)
+- [ ] Test critical paths one more time
 
-## Post-launch (Day +1)
-- [ ] Monitor for issues
-- [ ] Respond to feedback
-- [ ] Track metrics
-- [ ] Plan iteration
+### T-0: Launch
+- [ ] Submit to ProductHunt (12:01 AM PST)
+- [ ] Post to relevant subreddits
+- [ ] Send launch tweet thread
+- [ ] Message to email list
+- [ ] Update status page
+
+### T+1 Hour: Monitor
+- [ ] Check error logs
+- [ ] Monitor server performance
+- [ ] Respond to early feedback
+- [ ] Fix critical bugs immediately
 ```
 
-### Phase 10: Generate Implementation Plan
+## Success Metrics & Tracking
 
-#### 10.1 Create Todo List
-Use TodoWrite to create implementation tasks:
-```javascript
-const todos = [
-  { content: "Set up project structure", status: "pending" },
-  { content: "Implement authentication", status: "pending" },
-  { content: "Build core feature: " + coreFeature1, status: "pending" },
-  { content: "Add payment integration", status: "pending" },
-  { content: "Create landing page", status: "pending" },
-  { content: "Deploy MVP", status: "pending" }
-];
-```
-
-#### 10.2 Time Estimation
 ```markdown
-## Timeline to MVP
+## Analytics Setup (Day 2, 1 hour)
 
-### Day 1-2: Foundation
-- Project setup
-- Auth system
-- Database schema
+### Events to Track
+- [ ] User signup (source, referrer)
+- [ ] Feature usage (which features, frequency)
+- [ ] Upgrade clicks (from where)
+- [ ] Import completions (success rate)
+- [ ] Churn points (where users drop)
 
-### Day 3-5: Core Features
-- Feature 1 implementation
-- Feature 2 implementation
-- Basic UI
-
-### Day 6-7: Polish & Launch
-- Payment integration
-- Landing page
-- Deployment
-
-Total: $DAYS days to MVP
+### Tools
+- [ ] Posthog/Mixpanel for product analytics
+- [ ] Stripe for revenue metrics
+- [ ] Sentry for error tracking
+- [ ] Vercel Analytics for performance
 ```
 
-### Phase 11: Competitive Positioning
+## Output Files
 
-#### 11.1 Generate Comparison Page
-Create `docs/COMPETITIVE_ANALYSIS.md`:
-```markdown
-# $CLONE_NAME vs $ORIGINAL_NAME
+Save all generated files to the research results directory:
 
-| Feature | $ORIGINAL | $CLONE_NAME |
-|---------|-----------|-------------|
-| Price | $30/mo | $24/mo |
-| [Feature] | ✅ | ✅ |
-| [Our Addition] | ❌ | ✅ |
+```
+/research-results
+  /clone-[app-name]-$(date +%Y%m%d)
+    /plan
+      - implementation-plan.md (full detailed plan)
+      - day-by-day-checklist.md (simplified version)
+      - tech-decisions.md (stack choices explained)
+    /launch
+      - marketing-copy.md (all marketing content)
+      - product-hunt.md (ready to paste)
+      - reddit-posts.md (3 variations)
+    /code
+      - setup.sh (project initialization script)
+      - schema.sql (database schema if applicable)
+      - .env.example (required environment variables)
 ```
 
-#### 11.2 Migration Guide
-Create `docs/MIGRATION_GUIDE.md`:
-```markdown
-# Migrating from $ORIGINAL to $CLONE_NAME
+Primary output: `research-results/clone-[app-name]-$(date +%Y%m%d)/plan/implementation-plan.md`
 
-1. Export your data from $ORIGINAL
-2. Import into $CLONE_NAME
-3. Enjoy new features!
+## Post-Generation Message
+
+After plan generation, display:
+
+```
+✅ Quick Clone Plan Generated for [App Name]
+
+📋 Timeline: [X] days to MVP
+🎯 Differentiator Focus: [Key unique feature]
+💰 Expected MRR by Month 6: $[Amount]
+
+📁 Files created in research-results/clone-[app-name]-[date]/:
+- plan/implementation-plan.md (full detail)
+- plan/day-by-day-checklist.md (quick reference)
+- launch/marketing-copy.md (ready to use)
+- code/setup.sh (quick start script)
+
+Next steps:
+1. Open: research-results/clone-[app-name]-[date]/plan/implementation-plan.md
+2. Start with Day 1, Hour 1 tasks
+3. Use the setup.sh script to initialize your project
+
+Ready to start building? The first task is already copied to your clipboard!
 ```
 
-### Success Criteria
+## Important Notes
 
-Quick clone is successful if:
-- [ ] Project runs locally within 10 minutes
-- [ ] Core feature implemented in scaffold
-- [ ] Payment ready to connect
-- [ ] Can deploy to Vercel/Netlify immediately
-- [ ] Clear path to MVP in target days
+1. **This is a planning tool**, not a code generator
+2. **Plans adapt to project type** - Chrome extensions differ from SaaS
+3. **Leverages previous analysis** - Don't repeat research already done
+4. **Hour-by-hour for Day 1** - Most critical day detailed extensively
+5. **Specific, not vague** - Every task is actionable
+6. **Launch-focused** - Always building toward launch day
 
-### Post-Scaffold Actions
-
-After scaffolding complete:
-1. Display summary: "✅ Clone scaffolded: $CLONE_NAME"
-2. Show immediate next steps:
-   ```
-   cd $CLONE_NAME
-   npm install
-   npm run dev
-   ```
-3. Suggest: "Ready to implement! Check todos with: /todo:list"
-4. Remind: "MVP target: $DAYS days. Stay focused on core features!"
-
-### Integration with Other Commands
-
-- Use after `/research:app-analyze` identifies good candidate
-- Triggers `/pm:prd-new` for detailed planning if needed
-- Can initiate `/research:app-monitor` for original app
-- Links to `/pm:epic-start` for team collaboration
-
-Remember: The goal is to go from idea to running code in under 30 minutes, with clear path to MVP in days, not weeks.
+The goal: Transform strategic analysis into tactical execution with no ambiguity.
